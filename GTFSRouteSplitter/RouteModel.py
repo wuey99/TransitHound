@@ -51,8 +51,10 @@ class RouteModel(CSVRowModel):
 			trip_id = trip.getProperty("trip_id")
 
 			for shape in self._allShapes:
-				if shape.getProperty("shape_id") == shape_id:
-					self._matchingShapeIds[shape_id] = shape
+				shape_id_index = shape.getProperty("shape_id") + shape.getProperty("shape_pt_sequence")
+				if shape.getProperty("shape_id") == shape_id and (shape_id_index not in self._matchingShapeIds):
+					self._matchingShapes.append(shape)
+					self._matchingShapeIds[shape_id_index] = shape
 
 			for stopTime in self._allStopTimes:
 				if stopTime.getProperty("trip_id") == trip_id:
@@ -61,10 +63,6 @@ class RouteModel(CSVRowModel):
 
 		for stopTime in self._matchingStopTimes:
 			self._matchingStopIds[stopTime.getProperty("stop_id")] = 1
-
-
-		for shapeId in self._matchingShapeIds:
-			self._matchingShapes.append(self._matchingShapeIds[shapeId])
 
 		for stopId in self._matchingStopIds:
 			for stop in self._allStops:
